@@ -1,32 +1,21 @@
 require('dotenv').config()
 const Discojs = require('discojs')
+const fs = require('fs');
 
 const client = new Discojs.Discojs({
     userToken: process.env.USER_TOKEN,
 })
 
-// search among releases
-client
-    .searchRelease('Damon Albarn - Everyday Robots', {
-        releaseTitle: 'Damon Albarn - Everyday Robots'
-    })
-    .then(({results}) => {
-        console.log(results)
-    });
+const listingIDs = fs.readFileSync('/Users/bradculley/Documents/very-simple-cypress-seed/cypress/fixtures/listingIDs.json', {encoding:'utf8', flag:'r'});
 
-// search among releases
-client
-    .searchDatabase({
-        query: 'Damon Albarn - Everyday Robots',
-        type: "release"
+listingIDs.trim()
+    .split('\n')
+    .map(releaseID => parseInt(releaseID))
+    .forEach(releaseID => {
+        // get single release
+        client
+            .getListing(releaseID)
+            .then((results) => {
+                console.log(results)
+            });
     })
-    .then(({results}) => {
-        console.log(results)
-    });
-
-// get single release
-client
-    .getRelease(5636870)
-    .then((results) => {
-        console.log(results)
-    });
